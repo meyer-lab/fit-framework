@@ -1,4 +1,4 @@
-from typing import Callable, Dict, Optional
+from typing import Callable, Dict, Literal, Optional
 
 import numpy as np
 import pandas as pd
@@ -11,6 +11,12 @@ def fit(
     stratifiers: Dict[str, str],
     param_bounds: Dict[str, tuple[float, float]],
     infer_signal_fn: Callable[[pd.DataFrame], np.ndarray],
+    jac: Optional[Literal["2-point", "3-point"]] = "2-point",
+    max_nfev: int = 50,
+    ftol: float = 1e-6,
+    xtol: float = 1e-6,
+    gtol: float = 1e-3,
+    verbose: int = 2,
 ) -> pd.DataFrame:
     """
     Fits the model to the data using least squares optimization.
@@ -23,7 +29,9 @@ def fit(
         infer_signal_fn: Function to infer the signal from the data.
 
     Returns:
-        DataFrame with optimized parameters and inferred signals.
+        DataFrame with optimized parameters and inferred signals. This dataframe
+        will include the same columns as the input dataframe, with the addition
+        of the inferred signal and its standard error.
     """
     var_vals, const_vals = marshal_df(opt_df, var_params, stratifiers)
     x0 = np.concatenate(var_vals)
@@ -58,12 +66,12 @@ def fit(
         bounds=assemble_bounds_arrs(param_bounds, var_params, const_vals, stratifiers),
         jac_sparsity=assemble_jac_sparsity(var_params, const_vals, stratifiers),
         x_scale="jac",  # type: ignore
-        jac="2-point",
-        verbose=2,
-        max_nfev=50,
-        ftol=1e-6,
-        xtol=1e-6,
-        gtol=1e-3,
+        jac=jac,
+        verbose=verbose,
+        max_nfev=max_nfev,
+        ftol=ftol,
+        xtol=xtol,
+        gtol=gtol,
     )
 
     var_vals_opt = separate_var_vals(result.x, const_vals, var_params, stratifiers)
