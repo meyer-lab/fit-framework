@@ -1,0 +1,46 @@
+[project]
+name = "fit-framework"
+version = "0.1.0"
+description = "Add your description here"
+authors = [
+    { name = "Armaan Abraham", email = "armaanabraham@g.ucla.edu" }
+]
+dependencies = [
+    "numpy>=2.1.1",
+    "pandas>=2.2.2",
+    "scipy>=1.14.1",
+]
+readme = "README.md"
+requires-python = ">= 3.8"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = []
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/fit_framework"]
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+    # Unused arguments
+    "ARG",
+]
